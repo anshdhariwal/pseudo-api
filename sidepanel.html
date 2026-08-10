@@ -14,7 +14,8 @@
   <div class="error" id="err" style="display:none">
     refused to load — x-frame-options blocked
   </div>
-  <iframe id="aiframe" src="https://gemini.google.com/app"></iframe>
+  <iframe id="aiframe" src="https://gemini.google.com/app"
+    sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
   <script>
     var frame = document.getElementById('aiframe');
     var err = document.getElementById('err');
