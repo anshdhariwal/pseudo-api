@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "pseudo-api",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "iFrame based AI bridge that acts as an API for web apps",
   "permissions": [
     "tabs",
@@ -29,6 +29,24 @@
     {
       "matches": ["https://gemini.google.com/*"],
       "js": ["providers/gemini.js"],
+      "all_frames": true,
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": ["providers/claude.js"],
+      "all_frames": true,
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://chatgpt.com/*"],
+      "js": ["providers/chatgpt.js"],
+      "all_frames": true,
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.google.com/search*"],
+      "js": ["providers/gmode.js"],
       "all_frames": true,
       "run_at": "document_idle"
     }
