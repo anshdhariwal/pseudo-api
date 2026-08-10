@@ -50,8 +50,16 @@ function setstatus(text) {
   statusel.textContent = text;
 }
 
+function cleartestui() {
+  testinput.value = '';
+  testout.textContent = '';
+  testout.style.display = 'none';
+  activeTestReqId = null;
+}
+
 function load(provider) {
   current = provider;
+  cleartestui();
   setstatus('loading ' + provider + '...');
   if (port) port.postMessage({ action: 'AI_READY', provider: provider, ready: false });
   frame.src = urls[provider];
@@ -70,9 +78,18 @@ reloadbtn.addEventListener('click', function () {
   load(current);
 });
 
+testinput.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    testsend.click();
+  }
+});
+
 testsend.addEventListener('click', function () {
   var q = testinput.value.trim();
   if (!q) return;
+
+  testinput.value = '';
 
   activeTestReqId = 'test_' + Date.now();
   testout.style.display = 'block';
