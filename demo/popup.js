@@ -1,13 +1,16 @@
+var PSEUDO_API_ID = 'YOUR_PSEUDO_API_EXTENSION_ID';
+
 var btn = document.getElementById('send');
 var out = document.getElementById('response');
-var status = document.createElement('p');
-status.style.cssText = 'font-size:11px;color:#888;margin:4px 0 8px';
-document.body.insertBefore(status, btn.parentNode || btn);
+var status = document.getElementById('status');
 
 function checkstatus() {
-  chrome.runtime.sendMessage({ action: 'GET_STATUS' }, function (res) {
-    if (chrome.runtime.lastError) { status.textContent = 'extension not found'; return; }
-    status.textContent = res && res.ready ? 'ai ready - ' + res.provider : 'ai not ready';
+  chrome.runtime.sendMessage(PSEUDO_API_ID, { action: 'GET_STATUS' }, function (res) {
+    if (chrome.runtime.lastError) {
+      status.textContent = 'pseudo-api not found — load it first';
+      return;
+    }
+    status.textContent = res && res.ready ? 'ready - ' + res.provider : 'not ready';
   });
 }
 
@@ -20,7 +23,7 @@ btn.addEventListener('click', function () {
   out.textContent = 'waiting...';
   btn.disabled = true;
 
-  chrome.runtime.sendMessage({ action: 'ASK_AI', question: q }, function (res) {
+  chrome.runtime.sendMessage(PSEUDO_API_ID, { action: 'ASK_AI', question: q }, function (res) {
     btn.disabled = false;
     if (chrome.runtime.lastError) {
       out.textContent = 'error: ' + chrome.runtime.lastError.message;

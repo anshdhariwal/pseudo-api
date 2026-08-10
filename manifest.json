@@ -57,6 +57,9 @@
   "side_panel": {
     "default_path": "sidepanel.html"
   },
+  "externally_connectable": {
+    "matches": ["<all_urls>"]
+  },
   "action": {
     "default_title": "pseudo-api"
   }
