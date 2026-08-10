@@ -22,12 +22,24 @@ function sendprompt(box, text) {
 }
 
 function waitforanswer(callback) {
+  var lasttext = '';
+  var stable = 0;
+
   var t = setInterval(function () {
     var msgs = document.querySelectorAll('message-content .markdown');
     var last = msgs[msgs.length - 1];
-    if (last && last.getAttribute('aria-busy') === 'false') {
-      clearInterval(t);
-      callback(last.innerText.trim());
+    if (!last) return;
+
+    var text = last.innerText.trim();
+    if (last.getAttribute('aria-busy') === 'false' && text === lasttext && text.length > 0) {
+      stable++;
+      if (stable >= 2) {
+        clearInterval(t);
+        callback(text);
+      }
+    } else {
+      lasttext = text;
+      stable = 0;
     }
   }, 800);
 }
