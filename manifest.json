@@ -14,6 +14,13 @@
     "https://chatgpt.com/*",
     "https://www.google.com/*"
   ],
+  "content_scripts": [
+    {
+      "matches": ["https://gemini.google.com/*"],
+      "js": ["providers/gemini.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "background": {
     "service_worker": "background.js"
   },
