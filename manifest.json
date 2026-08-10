@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "pseudo-api",
+  "version": "0.1.0",
+  "description": "iFrame based AI bridge that acts as an API for web apps",
+  "permissions": [
+    "tabs",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://gemini.google.com/*",
+    "https://claude.ai/*",
+    "https://chatgpt.com/*",
+    "https://www.google.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "pseudo-api"
+  }
+}
