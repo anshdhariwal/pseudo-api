@@ -33,6 +33,11 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendresponse) {
     return;
   }
 
+  if (msg.action === 'GET_STATUS') {
+    sendresponse({ ready: ai.ready, provider: ai.provider });
+    return;
+  }
+
   if (msg.action === 'AI_READY') {
     ai.ready = true;
     ai.provider = msg.provider || ai.provider;
