@@ -1,14 +1,24 @@
 {
   "manifest_version": 3,
   "name": "pseudo-api",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "iFrame based AI bridge that acts as an API for web apps",
   "permissions": [
     "tabs",
     "scripting",
     "storage",
-    "sidePanel"
+    "sidePanel",
+    "declarativeNetRequest"
   ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
   "host_permissions": [
     "https://gemini.google.com/*",
     "https://claude.ai/*",
@@ -19,6 +29,7 @@
     {
       "matches": ["https://gemini.google.com/*"],
       "js": ["providers/gemini.js"],
+      "all_frames": true,
       "run_at": "document_idle"
     }
   ],
