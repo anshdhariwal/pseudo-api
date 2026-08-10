@@ -2,6 +2,10 @@ var frame = document.getElementById('aiframe');
 var statusel = document.getElementById('status');
 var sel = document.getElementById('provider');
 var reloadbtn = document.getElementById('reload');
+var testinput = document.getElementById('test-input');
+var testsend = document.getElementById('test-send');
+var testout = document.getElementById('test-output');
+var activeTestReqId = null;
 
 var urls = {
   gemini:  'https://gemini.google.com/app',
@@ -49,7 +53,7 @@ function setstatus(text) {
 function load(provider) {
   current = provider;
   setstatus('loading ' + provider + '...');
-  port.postMessage({ action: 'AI_READY', provider: provider, ready: false });
+  if (port) port.postMessage({ action: 'AI_READY', provider: provider, ready: false });
   frame.src = urls[provider];
 }
 
@@ -64,6 +68,23 @@ sel.addEventListener('change', function () {
 
 reloadbtn.addEventListener('click', function () {
   load(current);
+});
+
+testsend.addEventListener('click', function () {
+  var q = testinput.value.trim();
+  if (!q) return;
+
+  activeTestReqId = 'test_' + Date.now();
+  testout.style.display = 'block';
+  testout.textContent = 'sending prompt to ' + current + '...';
+
+  frame.contentWindow.postMessage({
+    source: 'pseudo-api-panel',
+    action: 'ASK',
+    question: q,
+    reqid: activeTestReqId
+  }, '*');
+  setstatus('answering test prompt...');
 });
 
 window.addEventListener('message', function (e) {
@@ -82,18 +103,24 @@ window.addEventListener('message', function (e) {
 
   if (data.action === 'AI_ANSWER') {
     setstatus('answer sent');
+    if (activeTestReqId && data.reqid === activeTestReqId) {
+      testout.textContent = data.answer;
+      activeTestReqId = null;
+    }
     if (port) port.postMessage({ action: 'AI_ANSWER', answer: data.answer, reqid: data.reqid });
     return;
   }
 
   if (data.action === 'AI_ERROR') {
     setstatus('error: ' + data.error);
+    if (activeTestReqId && data.reqid === activeTestReqId) {
+      testout.textContent = 'error: ' + data.error;
+      activeTestReqId = null;
+    }
     if (port) port.postMessage({ action: 'AI_ERROR', error: data.error, reqid: data.reqid });
     return;
   }
 });
-
-
 
 chrome.storage.local.get('provider', function (d) {
   var p = d.provider || 'gemini';

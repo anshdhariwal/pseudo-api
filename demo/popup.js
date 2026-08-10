@@ -7,7 +7,7 @@ var status = document.getElementById('status');
 function checkstatus() {
   chrome.runtime.sendMessage(PSEUDO_API_ID, { action: 'GET_STATUS' }, function (res) {
     if (chrome.runtime.lastError) {
-      status.textContent = 'pseudo-api not found — load it first';
+      status.textContent = 'pseudo-api not found - load it first';
       return;
     }
     status.textContent = res && res.ready ? 'ready - ' + res.provider : 'not ready';
