@@ -10,8 +10,37 @@ var urls = {
   gmode:   'https://www.google.com/search?udm=50&aep=11'
 };
 
-var port = chrome.runtime.connect({ name: 'pseudo-api-panel' });
+var port = null;
 var current = 'gemini';
+var aiready = false;
+
+function connectport() {
+  port = chrome.runtime.connect({ name: 'pseudo-api-panel' });
+
+  port.onDisconnect.addListener(function () {
+    port = null;
+    setTimeout(function () {
+      connectport();
+      if (aiready) {
+        port.postMessage({ action: 'AI_READY', provider: current });
+      }
+    }, 1500);
+  });
+
+  port.onMessage.addListener(function (msg) {
+    if (msg.action === 'ASK') {
+      frame.contentWindow.postMessage({
+        source: 'pseudo-api-panel',
+        action: 'ASK',
+        question: msg.question,
+        reqid: msg.reqid
+      }, '*');
+      setstatus('answering...');
+    }
+  });
+}
+
+connectport();
 
 function setstatus(text) {
   statusel.textContent = text;
@@ -45,35 +74,26 @@ window.addEventListener('message', function (e) {
   if (data.source && known.indexOf(data.source) === -1) return;
 
   if (data.action === 'AI_READY') {
+    aiready = true;
     setstatus(current + ' ready');
-    port.postMessage({ action: 'AI_READY', provider: current });
+    if (port) port.postMessage({ action: 'AI_READY', provider: current });
     return;
   }
 
   if (data.action === 'AI_ANSWER') {
     setstatus('answer sent');
-    port.postMessage({ action: 'AI_ANSWER', answer: data.answer, reqid: data.reqid });
+    if (port) port.postMessage({ action: 'AI_ANSWER', answer: data.answer, reqid: data.reqid });
     return;
   }
 
   if (data.action === 'AI_ERROR') {
     setstatus('error: ' + data.error);
-    port.postMessage({ action: 'AI_ERROR', error: data.error, reqid: data.reqid });
+    if (port) port.postMessage({ action: 'AI_ERROR', error: data.error, reqid: data.reqid });
     return;
   }
 });
 
-port.onMessage.addListener(function (msg) {
-  if (msg.action === 'ASK') {
-    frame.contentWindow.postMessage({
-      source: 'pseudo-api-panel',
-      action: 'ASK',
-      question: msg.question,
-      reqid: msg.reqid
-    }, '*');
-    setstatus('answering...');
-  }
-});
+
 
 chrome.storage.local.get('provider', function (d) {
   var p = d.provider || 'gemini';
