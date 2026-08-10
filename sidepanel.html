@@ -5,38 +5,85 @@
   <title>pseudo-api</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; display: flex; flex-direction: column; font-family: sans-serif; }
-    .error { padding: 24px; color: #c00; font-size: 13px; line-height: 1.6; }
-    iframe { flex: 1; width: 100%; border: none; }
+
+    html, body {
+      height: 100%;
+      background: #1a1a1a;
+      color: #eee;
+      font-family: sans-serif;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: #111;
+      border-bottom: 1px solid #333;
+      flex-shrink: 0;
+    }
+
+    .bar span { flex: 1; font-weight: 600; }
+
+    select {
+      background: #222;
+      color: #eee;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+    }
+
+    button {
+      background: #222;
+      color: #ccc;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    button:hover { background: #333; }
+
+    .status {
+      padding: 3px 10px;
+      font-size: 10px;
+      color: #666;
+      background: #111;
+      border-bottom: 1px solid #222;
+      flex-shrink: 0;
+    }
+
+    iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
   </style>
 </head>
 <body>
-  <div class="error" id="err" style="display:none">
-    refused to load — x-frame-options blocked
+
+  <div class="bar">
+    <span>pseudo-api</span>
+    <select id="provider">
+      <option value="gemini">Gemini</option>
+      <option value="claude">Claude</option>
+      <option value="chatgpt">ChatGPT</option>
+      <option value="gmode">AI Mode</option>
+    </select>
+    <button id="reload">reload</button>
   </div>
-  <iframe id="aiframe" src="https://gemini.google.com/app"
-    sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
-  <script>
-    var frame = document.getElementById('aiframe');
-    var err = document.getElementById('err');
 
-    frame.addEventListener('error', function () {
-      err.style.display = 'block';
-      frame.style.display = 'none';
-    });
+  <div class="status" id="status">loading...</div>
 
-    frame.addEventListener('load', function () {
-      try {
-        var doc = frame.contentDocument;
-        if (!doc || doc.URL === 'about:blank') {
-          err.style.display = 'block';
-          frame.style.display = 'none';
-        }
-      } catch (e) {
-        err.style.display = 'block';
-        frame.style.display = 'none';
-      }
-    });
-  </script>
+  <iframe id="aiframe"
+    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox">
+  </iframe>
+
+  <script src="sidepanel.js"></script>
 </body>
 </html>
