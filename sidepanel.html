@@ -5,11 +5,37 @@
   <title>pseudo-api</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; display: flex; flex-direction: column; }
+    html, body { height: 100%; display: flex; flex-direction: column; font-family: sans-serif; }
+    .error { padding: 24px; color: #c00; font-size: 13px; line-height: 1.6; }
     iframe { flex: 1; width: 100%; border: none; }
   </style>
 </head>
 <body>
+  <div class="error" id="err" style="display:none">
+    refused to load — x-frame-options blocked
+  </div>
   <iframe id="aiframe" src="https://gemini.google.com/app"></iframe>
+  <script>
+    var frame = document.getElementById('aiframe');
+    var err = document.getElementById('err');
+
+    frame.addEventListener('error', function () {
+      err.style.display = 'block';
+      frame.style.display = 'none';
+    });
+
+    frame.addEventListener('load', function () {
+      try {
+        var doc = frame.contentDocument;
+        if (!doc || doc.URL === 'about:blank') {
+          err.style.display = 'block';
+          frame.style.display = 'none';
+        }
+      } catch (e) {
+        err.style.display = 'block';
+        frame.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
